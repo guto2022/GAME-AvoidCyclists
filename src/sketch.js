@@ -1,4 +1,4 @@
-var path,mainCyclist;
+var path, path2, roadScale, roadWidth, mainCyclist;
 var player1,player2,player3;
 var pathImg,mainRacerImg1,mainRacerImg2;
 
@@ -36,34 +36,39 @@ function preload(){
 
 function setup(){
   
-createCanvas(1200,300);
-// Moving background
-path=createSprite(100,150);
-path.addImage(pathImg);
-path.velocityX = -5;
+  createCanvas(windowWidth, windowHeight);
 
-//creating boy running
-mainCyclist  = createSprite(70,150);
-mainCyclist.addAnimation("SahilRunning",mainRacerImg1);
-mainCyclist.scale=0.07;
-  
-//set collider for mainCyclist
+  // Moving background
+  roadScale = Math.max(width / pathImg.width, height / pathImg.height);
+  roadWidth = pathImg.width * roadScale;
 
-//mainCyclist.setCollission("rectangle",0,0,40,40);
-mainCyclist.setCollider("rectangle",0,0,40,40);
-//mainCyclist.setCollission("rectangle",0,0,40,40,50);
-//mainCyclist.setCollider("rectangle",0,0,40,40,50);
+  path = createSprite(roadWidth / 2, height / 2);
+  path.addImage(pathImg);
+  path.scale = roadScale;
 
-  
-gameOver = createSprite(650,150);
-gameOver.addImage(gameOverImg);
-gameOver.scale = 0.8;
-gameOver.visible = false;  
-  
-pinkCG = new Group();
-yellowCG = new Group();
-redCG = new Group();
-  
+  path2 = createSprite(roadWidth + roadWidth / 2, height / 2);
+  path2.addImage(pathImg);
+  path2.scale = roadScale;
+
+  path.velocityX = -5;
+  path2.velocityX = -5;
+
+  //creating boy running
+  mainCyclist = createSprite(width * 0.1, height / 2);
+  mainCyclist.addAnimation("SahilRunning",mainRacerImg1);
+  mainCyclist.scale=0.07;
+    
+  //set collider for mainCyclist
+  mainCyclist.setCollider("rectangle",0,0,40,40);
+    
+  gameOver = createSprite(width / 2, height / 2);
+  gameOver.addImage(gameOverImg);
+  gameOver.scale = 0.8;
+  gameOver.visible = false;  
+    
+  pinkCG = new Group();
+  yellowCG = new Group();
+  redCG = new Group();
 }
 
 function draw() {
@@ -72,26 +77,32 @@ function draw() {
   drawSprites();
   textSize(20);
   fill(255);
-  text("Distance: "+ distance,900,30);
+  textAlign(RIGHT, TOP);
+  text("Distance: " + distance, width - 30, 30);
   
   if(gameState===PLAY){
     
-   distance = distance + Math.round(getFrameRate()/50);
-   path.velocityX = -(6 + 2*distance/150);
-  
-   mainCyclist.y = World.mouseY;
-  
-   edges= createEdgeSprites();
-   mainCyclist .collide(edges);
-  
+    distance = distance + Math.round(getFrameRate()/50);
+    path.velocityX = -(6 + 2 * distance / 150);
+    path2.velocityX = path.velocityX;
+    
+    mainCyclist.y = World.mouseY;
+    
+    edges= createEdgeSprites();
+    mainCyclist .collide(edges);
+    
     //code to reset the background
-  if(path.x < 0 ){
-    path.x = width/2;
-  }
-  
+    if (path.x + roadWidth / 2 < 0) {
+      path.x = path2.x + roadWidth;
+    }
+
+    if (path2.x + roadWidth / 2 < 0) {
+      path2.x = path.x + roadWidth;
+    }
+    
     //code to play cycle bell sound
-  if(keyDown("space")) {
-    cycleBell.play();
+    if(keyDown("space")) {
+      cycleBell.play();
   }
   
   //creating continous opponent players
@@ -130,9 +141,11 @@ function draw() {
   
     textSize(20);
     fill(255);
-    text("Press Up Arrow to Restart the game!", 500,200);
+    textAlign(CENTER, CENTER);
+    text("Press Up Arrow to Restart the game!", width / 2, height * 0.68);
   
     path.velocityX = 0;
+    path2.velocityX = 0;
     mainCyclist.velocityY = 0;
     mainCyclist.addAnimation("SahilRunning",mainRacerImg2);
   
@@ -152,30 +165,40 @@ function draw() {
 }
 
 function pinkCyclists(){
-        player1 =createSprite(1100,Math.round(random(50, 250)));
-        player1.scale =0.06;
-        player1.velocityX = -(6 + 2*distance/150);
-        player1.addAnimation("opponentPlayer1",oppPink1Img);
-        player1.setLifetime=170;
-        pinkCG.add(player1);
+  player1 = createSprite(width + 100, random(80, height - 80));
+  player1.scale =0.06;
+  player1.velocityX = -(6 + 2*distance/150);
+  player1.addAnimation("opponentPlayer1",oppPink1Img);
+  player1.setLifetime=170;
+  pinkCG.add(player1);
 }
 
 function yellowCyclists(){
-        player2 =createSprite(1100,Math.round(random(50, 250)));
-        player2.scale =0.06;
-        player2.velocityX = -(6 + 2*distance/150);
-        player2.addAnimation("opponentPlayer2",oppYellow1Img);
-        player2.setLifetime=170;
-        yellowCG.add(player2);
+  player2 = createSprite(width + 100, random(80, height - 80));
+  player2.scale =0.06;
+  player2.velocityX = -(6 + 2*distance/150);
+  player2.addAnimation("opponentPlayer2",oppYellow1Img);
+  player2.setLifetime=170;
+  yellowCG.add(player2);
 }
 
 function redCyclists(){
-        player3 =createSprite(1100,Math.round(random(50, 250)));
-        player3.scale =0.06;
-        player3.velocityX = -(6 + 2*distance/150);
-        player3.addAnimation("opponentPlayer3",oppRed1Img);
-        player3.setLifetime=170;
-        redCG.add(player3);
+  player3 = createSprite(width + 100, random(80, height - 80));
+  player3.scale =0.06;
+  player3.velocityX = -(6 + 2*distance/150);
+  player3.addAnimation("opponentPlayer3",oppRed1Img);
+  player3.setLifetime=170;
+  redCG.add(player3);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+
+  mainCyclist.x = width * 0.1;
+  gameOver.x = width / 2;
+  gameOver.y = height / 2;
+
+  path.scale = height / pathImg.height;
 }
 
 function reset(){
@@ -187,5 +210,5 @@ function reset(){
   yellowCG.destroyEach();
   redCG.destroyEach();
   
-    distance = 0;
- }
+  distance = 0;
+}
