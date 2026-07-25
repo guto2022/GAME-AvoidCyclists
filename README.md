@@ -1,6 +1,6 @@
 # 🚴 GAME-AvoidCyclists
 
-> **Status:** 🚧 Em construção
+> **Status:** ✔️ Concluído
 
 ## 📖 Sobre
 
